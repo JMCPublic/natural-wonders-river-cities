@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f3ec">
-<title>River Cities</title>
+<title>Natural Wonders · River Cities</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -183,13 +183,14 @@ html.phone body.timed .q{margin:4px 0 6px}
 html.phone body.timed .choice{min-height:44px;padding:8px 12px}
 html.phone body.timed .rank .btn{position:static!important;box-shadow:none!important}
 html.phone body.timed .lockbar{bottom:calc(64px + env(safe-area-inset-bottom))!important}
+.nwser{font:600 12px/1.4 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}.nwser b{color:#b8663a;font-weight:700}.nwser a{color:inherit;text-decoration:underline;text-underline-offset:3px}.nwser a:hover{color:var(--ink)}a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
 <script>
-const VERSION='v2';
+const VERSION='v3';
 /* ---------- timer (shared) ---------- */
 const TM={on:true,left:0,secs:15,copper:5,t0:0,iv:null,key:null,onUp:null,
   start(key,secs,copper,onUp){if(!this.on){this.hide();return}if(this.key===key&&this.iv)return;this.stop();this.key=key;this.secs=secs;this.copper=copper;this.onUp=onUp;this.t0=performance.now();this.build();this.draw(secs);
@@ -281,13 +282,13 @@ function render(keep){lastLay=applyLayout();document.getElementById('app').inner
 function syncTimer(){if(S.screen!=='play'){TM.hide();return}const R=S.game[S.cur];if(R.done)return;const secs=15*R.targets.length;TM.start(GSER+':'+S.cur,secs,10,()=>{R.timedOut=true;R.secs=secs;R.done=true;advance()})}
 function advance(){S.cur++;if(S.cur>=S.game.length)S.screen='results';render()}
 function menuHTML(){const nR=riversFor(S.where,+S.k).length;const nAll=COUNTRIES.reduce((s,c)=>s+c.rivers.length,0);
-  return `<div class="menuhead"><h1><small>Geography games</small>River Cities</h1><p class="sub">A river and its country. Cities A and B sit on the river. Which ones are they? Pick from ten numbered cities.</p></div>
+  return `<div class="menuhead"><div><div class="nwser"><b>Natural Wonders</b> · Game 7 of 10 · <a href="https://jmcpublic.github.io/">All games</a></div><h1>River Cities</h1></div><p class="sub">A river and its country. Cities A and B sit on the river. Which ones are they? Pick from ten numbered cities.</p></div>
   <div class="panel menu"><div><div class="label">Where</div><div class="opts">${Object.entries(WHERE).map(([k,v])=>`<button class="opt ${S.where===k?'on':''}" onclick="setOpt('where','${k}')">${v.t}<small>${v.s?v.s+' · ':''}${riversFor(k,2).length} rivers</small></button>`).join('')}</div>
   <div class="label">Cities to find each round</div><div class="opts">${Object.entries(KN).map(([k,v])=>{const na=!riversFor(S.where,+k).length;return `<button class="opt ${String(S.k)===k?'on':''} ${na?'na':''}" ${na?'disabled':''} onclick="setOpt('k',${k})">${v.t}<small>${na?'Not enough here':v.s}</small></button>`}).join('')}</div></div>
   <div>${TM.menuRow('15 s per city to find')}<div class="label">Number of rounds</div><div class="opts">${ROUNDS.map(n=>`<button class="opt ${S.rounds===n?'on':''}" onclick="setOpt('rounds',${n})">${n} rounds</button>`).join('')}</div>
   <div class="row" style="margin-top:18px"><button class="btn" onclick="startGame()">Start — ${S.rounds} rounds</button></div>
   <p class="gcap" style="margin-top:10px">${nR} river${nR===1?'':'s'} to play with here. A river can come up again in a long game, with different cities.</p></div></div>
-  <p class="foot">Layout <span class="lay">${Object.entries(LAYOUTS).map(([k,v])=>`<button class="${S.layout===k?'on':''}" onclick="setLayout('${k}')">${v}${k==='auto'&&S.layout==='auto'?' ('+LAYOUTS[autoLayout()]+')':''}</button>`).join('')}</span><br>${nAll} rivers in ${COUNTRIES.length} countries · River Cities ${VERSION} · <button class="srclink" onclick="openSources()">Sources</button></p>`}
+  <p class="foot">Layout <span class="lay">${Object.entries(LAYOUTS).map(([k,v])=>`<button class="${S.layout===k?'on':''}" onclick="setLayout('${k}')">${v}${k==='auto'&&S.layout==='auto'?' ('+LAYOUTS[autoLayout()]+')':''}</button>`).join('')}</span><br>${nAll} rivers in ${COUNTRIES.length} countries · Natural Wonders: River Cities ${VERSION} · <button class="srclink" onclick="openSources()">Sources</button></p>`}
 window.setOpt=(k,v)=>{S[k]=k==='where'?v:+v;if(!riversFor(S.where,+S.k).length)S.k=2;save();render()};
 window.startGame=()=>{const g=makeGame();if(!g){toast('Not enough rivers for that choice. Try 2 cities or another region.');return}GSER++;TM.left=0;S.game=g;S.cur=0;S.screen='play';render()};
 function playHTML(){const R=S.game[S.cur],c=BYC[R.c],r=c.rivers[R.ri],phone=curLayout()==='phone',k=R.targets.length;const full=R.slots.every(x=>x!=null);
@@ -328,9 +329,9 @@ function resultsHTML(){let right=0,total=0;const cards=[];
      <div class="rgrid"><div>${resultsMap(R)}<div class="legend"><span><i class="lg t"></i>On the ${esc(r.n)} (${LET.slice(0,R.targets.length).split('').join(', ')})</span>${wrongs.size?'<span><i class="lg w"></i>Your wrong pick</span>':''}<span><i class="lg o"></i>The other cities</span></div></div>
      <div>${rows}<div class="fact">${facts.map(f=>`<p>💡 ${f}</p>`).join('')}</div><div class="srcline">Source: <a href="${wikiURL(r.wiki)}" target="_blank" rel="noopener">Wikipedia: ${esc(decodeURIComponent(r.wiki).replace(/_/g,' '))}</a>. Map and city positions from <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>.</div></div></div></div>`)});
   return `<h1>Results</h1><div class="panel"><div class="score"><div class="big">${right}/${total}</div><div><h2>${verdict(right/total)}</h2>${TM.summary(right,total,S.game.reduce((s,r)=>s+(r.secs||0),0))}<div style="color:var(--muted);font-size:14px">River Cities · ${esc(WHERE[S.where].t.replace(/^\S+ (?=[A-Z])/,''))} · ${S.game[0].targets.length} cities a round · ${S.game.length} rounds</div></div></div>
-  <div class="row" style="margin-top:16px"><button class="btn" onclick="startGame()">Play again</button><button class="btn ghost" onclick="quit()">Change settings</button><button class="btn ghost" onclick="share(${right},${total})">Share score</button><button class="btn ghost" onclick="openSources()">Sources</button></div></div>
+  <div class="row" style="margin-top:16px"><button class="btn" onclick="startGame()">Play again</button><button class="btn ghost" onclick="quit()">Change settings</button><button class="btn ghost" onclick="share(${right},${total})">Share score</button><button class="btn ghost" onclick="openSources()">Sources</button><a class="btn ghost" href="https://jmcpublic.github.io/">More games</a></div></div>
   <div class="label" style="margin-top:24px">Round by round</div>${cards.join('')}<p class="foot">Which river each city stands on comes from the Wikipedia article named under each round. <button class="srclink" onclick="openSources()">See all sources</button></p>`}
-window.share=async(r,n)=>{const t=`River Cities. I scored ${r}/${n}. Can you beat me?`;const u=location.href.startsWith('http')?location.href:'';
+window.share=async(r,n)=>{const t=`Natural Wonders: River Cities. I scored ${r}/${n}. Can you beat me?`;const u=location.href.startsWith('http')?location.href:'';
   try{if(navigator.share){await navigator.share({text:t,url:u||undefined});return}}catch(e){return}
   try{await navigator.clipboard.writeText(t+(u?' '+u:''));toast('Score copied. Paste it to a friend.')}catch(e){toast(t)}};
 function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),3800)}
