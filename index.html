@@ -385,6 +385,22 @@ html.nwfit-on .rank{overflow:hidden}
  html:not(.phone).nwfit-on .rank .label{margin:10px 0 6px}
  html:not(.phone).nwfit-on .kbd{display:none}
 }
+
+/* one-screen rule (15 Nov): on phones every city and Lock in fit on one screen with the map */
+@media (max-height:760px){
+ html.phone .cslots{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px}
+ html.phone .cslot{min-height:38px;padding:4px 8px}
+ html.phone .clist{gap:5px}
+ html.phone .ct{min-height:38px;padding:4px 8px;font-size:14px}
+ html.phone .rank .label{margin:6px 0 4px}
+ html.phone .rank .btn{margin-top:8px;padding:11px}
+}
+@media (max-height:500px){
+ html.phone .q>span{display:none}
+ html.phone .q{margin:2px 0 4px}
+ html.phone .ct{min-height:34px;font-size:13px}
+ html.phone .cslot{min-height:34px}
+}
 </style>
 <script>
 (()=>{
@@ -413,9 +429,9 @@ function fit(){busy=true;const root=document.documentElement;
       const mc=board.querySelector(':scope>.mapcard');
       const bh=Math.max(0,Math.floor(play.getBoundingClientRect().bottom-board.getBoundingClientRect().top));
       board.style.height=bh+'px';
-      const minMap=Math.max(H()<600?90:110,Math.min(240,bh*.3));
+      const minMap=Math.max(H()<500?70:H()<600?90:110,Math.min(240,bh*(H()<500?.22:.3)));
       const need=rank.scrollHeight,room=bh-minMap-8;
-      if(need>room){const z=Math.max(.78,room/need);zoomKids(rank,z)}
+      if(need>room){const z=Math.max(H()<500?.68:.78,room/need);zoomKids(rank,z)}
       const rh=Math.ceil(rank.getBoundingClientRect().height);
       if(rh>bh-minMap-8+2){
         // still too tall even shrunk (a very small phone): give the page back its normal scrolling, so the answers and
